@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Memita 🌻 Flores Amarillas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;600;800&family=Parisienne&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #fffdf0 0%, #ffec99 100%);
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            color: #423828;
+            transition: background 0.8s ease, color 0.8s ease;
+        }
+
+        #pantalla-inicio {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f59f00 0%, #f08c00 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #btn-comenzar {
+            padding: 16px 45px;
+            font-size: 20px;
+            background: #fff;
+            color: #d97706;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(180, 83, 9, 0.35);
+            font-weight: 800;
+            animation: latido 1.5s infinite;
+        }
+
+        #popup-romantico {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(40, 30, 10, 0.75);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-card {
+            background: #fffdf5;
+            padding: 30px;
+            border-radius: 25px;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            border: 2px solid #ffe066;
+            animation: aparecerSubiendo 0.4s ease-out;
+        }
+
+        .popup-card h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #d97706;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .btn-activar {
+            background: linear-gradient(135deg, #f59f00 0%, #f08c00 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-bottom: 10px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(245, 159, 0, 0.4);
+        }
+
+        .btn-omitir {
+            background: transparent;
+            color: #8c7c64;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #contenido-principal {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            max-width: 550px;
+            margin: 0 auto;
+            padding-bottom: 70px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 40px 25px;
+            border-radius: 35px;
+            box-shadow: 0 25px 50px -12px rgba(217, 119, 6, 0.28);
+            border: 3px solid #fff9db;
+            margin-top: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 { color: #b45309; font-size: 32px; font-family: 'Dancing Script', cursive; margin-bottom: 5px; }
+        
+        #contador { display: flex; justify-content: center; gap: 8px; margin: 20px 0 30px 0; width: 100%; }
+        .caja-tiempo { background: #fffdf5; padding: 8px 5px; border-radius: 12px; min-width: 50px; border: 2px solid #ffe066; flex: 1; }
+        .numero { font-size: 20px; font-weight: 800; color: #d97706; display: block; }
+        .etiqueta { font-size: 10px; color: #b45309; text-transform: uppercase; font-weight: 600; }
+
+        .galeria { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 30px 0; }
+        .foto-marco { 
+            width: 135px; 
+            height: 135px; 
+            border-radius: 22px; 
+            border: 5px solid #fff; 
+            overflow: hidden; 
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.2); 
+            transition: all 0.4s ease; 
+        }
+        .foto-marco:hover { transform: scale(1.08) rotate(2deg); }
+        .foto-marco img { width: 100%; height: 100%; object-fit: cover; }
+
+        .lista-amor { 
+            text-align: left; 
+            background: #fffdf2; 
+            padding: 25px; 
+            border-radius: 20px; 
+            margin: 30px 0; 
+            border: 2px dashed #fcc419; 
+        }
+        .item-amor { margin-bottom: 12px; font-size: 16px; color: #78350f; display: flex; align-items: center; font-weight: 600; }
+        .item-amor:before { content: "🌻"; margin-right: 12px; font-size: 18px; }
+
+        .theme-switch { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #78350f; }
+        .theme-switch input { display: none; }
+        .theme-switch .slider { width: 40px; height: 20px; background-color: #e9ecef; border-radius: 20px; position: relative; cursor: pointer; border: 1px solid #fab005; }
+        .theme-switch .slider:before { content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%; background-color: #fab005; top: 1px; left: 2px; transition: 0.4s; }
+        .theme-switch input:checked + .slider { background-color: #fab005; }
+        .theme-switch input:checked + .slider:before { transform: translateX(19px); background-color: #1a1528; }
+
+        .carta-texto { 
+            color: #4a3e2c; 
+            line-height: 1.9; 
+            font-size: 17px; 
+            font-family: 'Nunito', sans-serif;
+            margin-bottom: 25px;
+            text-align: left;
+            padding: 0 10px;
+            white-space: pre-line;
+        }
+
+        .firma {
+            font-family: 'Parisienne', cursive;
+            font-size: 34px;
+            color: #b45309;
+            text-align: right;
+            margin-top: 20px;
+            padding-right: 20px;
+        }
+
+        #btn-musica {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 5000;
+            background: #d97706;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 22px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        body.dark-mode { background: linear-gradient(135deg, #1f1b16 0%, #120f0a 100%); color: #f5eedc; }
+        .dark-mode .container { background: #262119; border-color: #473a25; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+        .dark-mode h1, .dark-mode .numero, .dark-mode .item-amor, .dark-mode .firma { color: #fcc419; }
+        .dark-mode .caja-tiempo, .dark-mode .lista-amor { background: #332a1d; border-color: #fcc419; }
+        .dark-mode .carta-texto { color: #e9dec9; }
+        .dark-mode .theme-switch { color: #ffd43b; }
+
+        @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+        @keyframes aparecerSubiendo { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .flor-rain { position: fixed; top: -5vh; z-index: 1; animation: fall linear forwards; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(105vh) rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-inicio">
+        <div style="font-size:70px; margin-bottom: 10px;">🌻</div>
+        <h1 style="color:white; margin-bottom:40px; font-family:'Nunito'; text-align: center; padding: 0 20px;">Llegó el 21 de Septiembre...</h1>
+        <button id="btn-comenzar">🌻 RECIBIR FLORES 🌻</button>
+    </div>
+
+    <div id="popup-romantico">
+        <div class="popup-card">
+            <h2>¡Espera, Memita! 🌻</h2>
+            <p>Para encender la magia de tus flores, activa el Modo Romántico ✨</p>
+            <button class="btn-activar" onclick="activarModoRomantico()">¡Activar ahora!</button><br>
+            <button class="btn-omitir" onclick="cerrarPopup()">Ver normal</button>
+        </div>
+    </div>
+
+    <div id="contenido-principal">
+        <label class="theme-switch">
+            Modo Romántico ✨
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+        </label>
+
+        <div class="container">
+            <h1>¡Feliz 21 de Septiembre, mi <span style="font-family:'Parisienne'">Memita!</span></h1>
+            <p style="font-size:14px; color:#b45309; font-weight:700;">Flores amarillas que nunca se marchitan 🌻</p>
+            
+            <div id="contador">
+                <div class="caja-tiempo"><span class="numero" id="dias">0</span><span class="etiqueta">Días</span></div>
+                <div class="caja-tiempo"><span class="numero" id="horas">0</span><span class="etiqueta">Horas</span></div>
+                <div class="caja-tiempo"><span class="numero" id="minutos">0</span><span class="etiqueta">Min</span></div>
+                <div class="caja-tiempo"><span class="numero" id="segundos">0</span><span class="etiqueta">Seg</span></div>
+            </div>
+
+            <div class="galeria">
+                <div class="foto-marco"><img src="IMG-20260918-WA0124.jpg" alt="Foto 1"></div>
+                <div class="foto-marco"><img src="IMG-20260918-WA0125.jpg" alt="Foto 2"></div>
+                <div class="foto-marco"><img src="IMG-20260918-WA0126.jpg" alt="Foto 3"></div>
+                <div class="foto-marco"><img src="IMG-20260918-WA0128.jpg" alt="Foto 4"></div>
+            </div>
+
+            <div class="carta-texto">
+                <b>Pamela, mi Memita hermosa:</b>
+
+                Dicen que las flores amarillas se entregan para prometer un amor sincero que nunca se apaga. Hoy quise darte estas flores digitales que jamás se van a marchitar, guardando cada recuerdo y momento especial que venimos construyendo.
+
+                Desde aquel 6 de abril de 2024, ver ese contador avanzar día tras día me hace recordar lo afortunado que soy de tenerte a mi lado. Gracias por tu ternura, por cada risa compartida y por hacer que cada instante valga la pena. Eres mi paz, mi lugar seguro y mi persona favorita.
+
+                Esta página guarda solo un pedacito de nuestra historia, porque lo mejor todavía lo estamos escribiendo juntos.
+
+                Te amo con todo mi corazón, Memita. ¡Feliz 21 de septiembre!
+            </div>
+            
+            <div class="firma">Isaac</div>
+
+            <div class="lista-amor">
+                <div class="item-amor">Amo tu manera única de hacerme sonreír</div>
+                <div class="item-amor">Amo la paz que siento cuando estoy a tu lado</div>
+                <div class="item-amor">Amo cada momento bonito que pasamos juntos</div>
+                <div class="item-amor">Amo absolutamente todo de ti, Memita</div>
+            </div>
+            <div style="font-size: 32px; letter-spacing: 5px;">🌻🌼💛🌼🌻</div>
+        </div>
+    </div>
+
+    <button id="btn-musica" onclick="toggleMusica()">🎵</button>
+
+    <audio id="musica" loop preload="auto">
+        <source src="ALMOHADA%20LO%20QUE%20NO%20FUE,%20NO%20SER%C3%81%20ANGEL%20MEJ%C3%8DA%20Y%20ORQ.%20CEVICHELA%20-%20SJM%20(1).mp3" type="audio/mpeg">
+        <source src="ALMOHADA LO QUE NO FUE, NO SERÁ ANGEL MEJÍA Y ORQ. CEVICHELA - SJM (1).mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const fechaInicio = new Date("April 6, 2024 00:00:00").getTime();
+        const body = document.body;
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const musica = document.getElementById('musica');
+
+        document.getElementById('btn-comenzar').addEventListener('click', function() {
+            if (musica) {
+                musica.play().catch(err => console.log("Audio bloqueado:", err));
+            }
+            document.getElementById('pantalla-inicio').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('pantalla-inicio').style.display = 'none';
+                document.getElementById('popup-romantico').style.display = 'flex';
+            }, 400);
+        });
+
+        function activarModoRomantico() {
+            body.classList.add('dark-mode');
+            darkModeToggle.checked = true;
+            cerrarPopup();
+        }
+
+        function cerrarPopup() {
+            if (musica && musica.paused) {
+                musica.play().catch(() => {});
+            }
+            document.getElementById('popup-romantico').style.display = 'none';
+            document.getElementById('contenido-principal').style.display = 'block';
+        }
+
+        function toggleMusica() {
+            if (musica.paused) {
+                musica.play();
+                document.getElementById('btn-musica').innerText = '🎵';
+            } else {
+                musica.pause();
+                document.getElementById('btn-musica').innerText = '🔇';
+            }
+        }
+
+        darkModeToggle.addEventListener('change', () => body.classList.toggle('dark-mode'));
+
+        setInterval(() => {
+            const diferencia = new Date().getTime() - fechaInicio;
+            document.getElementById("dias").innerText = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            document.getElementById("horas").innerText = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutos").innerText = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("segundos").innerText = Math.floor((diferencia % (1000 * 60)) / 1000);
+        }, 1000);
+
+        setInterval(() => {
+            const flor = document.createElement('div');
+            flor.classList.add('flor-rain');
+            const items = ['🌻', '🌼', '💛', '✨', '🌸'];
+            flor.innerHTML = items[Math.floor(Math.random() * items.length)];
+            flor.style.left = Math.random() * 100 + 'vw';
+            flor.style.fontSize = (Math.random() * 14 + 18) + 'px';
+            flor.style.animationDuration = Math.random() * 3 + 3.5 + 's';
+            document.body.appendChild(flor);
+            setTimeout(() => flor.remove(), 6500);
+        }, 350);
+    </script>
+</body>
+</html>
+  
